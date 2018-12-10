@@ -1,0 +1,68 @@
+*, *:before, *:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+.container {
+    width: 100vw;
+    /* height: 200vh; */
+    background: black;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    
+}
+
+.population {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.population:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+.org {
+    width: 10px;
+    height: 10px;
+    background: white;
+    margin: 1px;
+}
+.org:hover {
+    border: 1px solid rgba(255, 255, 255, 0.219);
+}
+.org:hover > .info {
+    display: block;
+    display: flex;
+    flex-direction: column;
+}
+
+.cycleInfo {
+    position: absolute;
+    left: 0;
+    font-family: sans-serif;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.664);
+}
+
+
+.info {
+    background: rgba(255, 255, 255, 0.664);
+    position: fixed;
+    right: 0;
+    top: 0;    
+    display: none;
+    font-family: sans-serif;
+    font-size: 10px;
+    color: black);
+}
+
+.plus {
+    color: teal
+}
+
+.minus {
+    color: brown
+}
