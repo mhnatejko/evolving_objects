@@ -161,6 +161,7 @@ const tree = makeTree2(inputData, null);
 console.log(
     JSON.stringify(tree, null, 2)
 )
+//module.exports = populationHistory;
 
 //----------------------------------rendering------------------------------------
 
