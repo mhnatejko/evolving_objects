@@ -6,14 +6,15 @@ const { randomNum } = require('./js/methods');
 window.addEventListener('DOMContentLoaded', function(){
     const ecosystem = new CanvasArea({
         height: 500,
-        width: 500
+        width: 500,
+        cycleTime: 100
     });    
     
     const randomOrg = () => {
         const r = randomNum(255);
         const g = randomNum(255);
         const b = randomNum(255);
-        const id = randomNum(1000000);
+        const id = `org${(new Date()).getTime()}`;
         const height = 10;
         const width = 10;
         const x = randomNum(ecosystem.width - width);

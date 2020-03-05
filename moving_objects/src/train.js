@@ -51,17 +51,67 @@
 // console.log(mx[3][3]);
 // console.log(mx);
 
-const a = 'rgb(100, 200,300)';
-const rgb = a
-    .replace('rgb', '')
-    .replace('(', '')
-    .replace(')', '')
-    .split(',')
-    .map(el => el.trim())
-    .map(el => parseInt(el) + 20)
-    .join(',');
+// const a = 'rgb(100, 200,300)';
+// const rgb = a
+//     .replace('rgb', '')
+//     .replace('(', '')
+//     .replace(')', '')
+//     .split(',')
+//     .map(el => el.trim())
+//     .map(el => parseInt(el) + 20)
+//     .join(',');
 
-const newColor = `rgb(${rgb})`;
+// const newColor = `rgb(${rgb})`;
 
 
-console.log(a, newColor);
+// console.log(a, newColor);
+/**
+ * 
+//  */
+// class A{
+//     constructor(obj){
+//         this.x = obj
+//     }
+// }
+
+// class B{
+//     constructor(a){
+//         this.a = a;
+//     }
+
+//     printA(){
+//         console.log(this.a.x);
+
+//     }
+
+//     add(key, num){
+//         this.a.x[key] = num;
+//         this.printA();
+//     }
+    
+//     remove(key){
+//         delete this.a.x[key]
+//         this.printA();
+//     }
+// }
+
+// const a = new A({
+//     m: 1,
+//     n: 2,
+//     o: 3
+// });
+
+// const b = new B(a);
+
+// b.add('r', 100);
+// b.remove('n')
+
+a = [ 1, 2, 3 ];
+b = [ 1, 1, 1 ];
+
+const isEqual = arr => arr.every((el, i, arr) => el === arr[0] );
+
+console.log(
+    isEqual(a),
+    isEqual(b)
+);

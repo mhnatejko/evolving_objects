@@ -8,7 +8,7 @@ const defaultParams = {
 };
 
 const defaultCyclesProp = {
-    max: 5,
+    max: 12,
     current: 0
 };
 
@@ -24,69 +24,99 @@ class Molecule{
             height: params.height,
             width: params.width
         };
+        this.maxPos = {
+            x: canvas.width - this.size.width,
+            y: canvas.height - this.size.height
+        };
         this.color = params.color;     
         this.cyclesProp = {
             max: cyclesProp.max,
             current: cyclesProp.current
         };
+        this.spreadCount = 0;
     };
 
     drawMolecule(){
         this.ctx.fillStyle = this.color;
+        let xPos = this.pos.x - (Math.floor(this.size.width / 2));
+        let yPos = this.pos.y - (Math.floor(this.size.height / 2));
+
+        if(xPos > this.maxPos.x){
+            this.pos.x = this.maxPos.x;
+            xPos = this.maxPos.x;
+        };
+        
+        if(xPos < 0){
+            this.pos.x = 0;
+            xPos = 0;
+        };
+
+        if(yPos > this.maxPos.y){
+            this.pos.y = this.maxPos.y;
+            yPos = this.maxPos.y;
+        };
+
+        if(yPos < 0){
+            this.pos.y = 0;
+            yPos = 0;
+        };
+
         this.ctx.fillRect(
-            ( this.pos.x - (Math.floor(this.size.width / 2)) ), 
-            ( this.pos.y - (Math.floor(this.size.height / 2)) ), 
+            xPos, 
+            yPos, 
             this.size.width, 
             this.size.height
         );
     };
 
     destroyMolecule(){
-        if(this.canvas.molecules[this.id]){
-            delete this.canvas.molecules[this.id];
-        };
+        if(this.canvas.molecules[this.id]) delete this.canvas.molecules[this.id];
     };
 
     spread(){
+        this.spreadCount++;
+        const height = this.size.height * randomNum(6);
+        const width = this.size.width * randomNum(6);
+
         const spreadDirections = [
             {
                 x: this.pos.x,
-                y: this.pos.y - this.size.height
+                y: this.pos.y - height
             }, 
             {
-                x: this.pos.x + this.size.width,
-                y: this.pos.y - this.size.height
+                x: this.pos.x + width,
+                y: this.pos.y - height
             }, 
             {
-                x: this.pos.x + this.size.width,
+                x: this.pos.x + width,
                 y: this.pos.y
             }, 
             {
-                x: this.pos.x + this.size.width,
-                y: this.pos.y + this.size.height
+                x: this.pos.x + width,
+                y: this.pos.y + height
             }, 
             {
                 x: this.pos.x,
-                y: this.pos.y + this.size.height
+                y: this.pos.y + height
             }, 
             {
-                x: this.pos.x - this.size.width,
-                y: this.pos.y + this.size.height
+                x: this.pos.x - width,
+                y: this.pos.y + height
             }, 
             {
-                x: this.pos.x - this.size.width,
+                x: this.pos.x - width,
                 y: this.pos.y
             }, 
             {
-                x: this.pos.x - this.size.width,
-                y: this.pos.y - this.size.height
+                x: this.pos.x - width,
+                y: this.pos.y - height
             }
         ];
         const dirLens = spreadDirections.length;
         const randomDir = randomNum(dirLens);
 
         const molecule = new Molecule(
-            `mol${randomNum(1000000)}`,
+            `mol${(new Date()).getTime()}_${this.id}`,
             this.canvas, 
             { 
                 height: this.size.height,
@@ -122,8 +152,7 @@ class Molecule{
     };
 
     updateCycle(){
-        this.cyclesProp.current += 1;
-        if(this.cyclesProp.current >= this.cyclesProp.max) this.destroyMolecule();
+        this.cyclesProp.current += 1;        
     };
 
     colorBrightening(){        
@@ -133,7 +162,7 @@ class Molecule{
             .replace(')', '')
             .split(',')
             .map(el => el.trim())
-            .map(el => parseInt(el) + 5)
+            .map(el => parseInt(el) + 20)
             .join(',');
 
         this.color = `rgb(${rgb})`;
@@ -141,9 +170,13 @@ class Molecule{
 
     cycle(){
         this.updateCycle();
-        this.colorBrightening();
-        this.spread();
-        this.drawMolecule();        
+        if(this.cyclesProp.current >= this.cyclesProp.max){
+            this.destroyMolecule();
+        }else{
+            if(this.spreadCount <= 1 ) this.spread();
+            this.drawMolecule();                
+            this.colorBrightening();
+        };
     };
 };
 

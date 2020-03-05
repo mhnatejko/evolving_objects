@@ -10,7 +10,7 @@ class CanvasArea {
         this.canvas.setAttribute('width', this.width.toString());
         this.ctx = canvas.getContext('2d');
 
-        this.cycleTime = 200;
+        this.cycleTime = params.cycleTime;
         this.ecosystemMatrix = [];
         this.orgs = [];
         this.molecules = {};
@@ -34,19 +34,11 @@ class CanvasArea {
             for(let y = 0; y < this.height; y++){
                 this.ecosystemMatrix[x].push({
                     // cell_id: `${x}/${y}`,
+                    molecules: [],
                     orgs: []
                 });
             };
         };
-
-
-        // this.ecosystemMatrix = arrGen(
-        //     this.width, 
-        //     arrGen(
-        //         this.height, 
-        //         { orgs: [] }
-        //     )
-        // );
     };
 
     fillMatrix(){
@@ -71,9 +63,24 @@ class CanvasArea {
                 };
             };
         });
-        // this.molecules.forEach(el => {
+        for(let key in this.molecules){
+            const molecule = this.molecules[key];
 
-        // })
+            const xStart = molecule.pos.x;
+            const xEnd = molecule.pos.x + molecule.size.width;
+            const yStart = molecule.pos.y;
+            const yEnd = molecule.pos.y + molecule.size.height;   
+            
+            for(let ix = xStart; ix < xEnd; ix++){
+                for(let iy = yStart; iy < yEnd; iy++){
+                    try{
+                        this.ecosystemMatrix[ix][iy].molecules.push(molecule.id);
+                    }catch(err){
+                        // console.log(ix, iy);
+                    }
+                };
+            };
+        };
     };
 
     resetCanvas(){
@@ -81,17 +88,25 @@ class CanvasArea {
     };
 
     runCycles(){
+        // const orgsID = this.orgs.reduce((arr, org) => [ ...arr, org.id ], []);
+        // console.log(orgsID);
         setInterval(() => {
             this.resetCanvas();
             this.matrixGen();
             this.fillMatrix();
-            
-            // this.molecules.forEach(molecule => molecule.cycle());
-           
+// check if all malecules numbers are same
+            // const moleculesKeys = Object.keys(this.molecules);
+            // const moleculesGroups = orgsID
+            //     .map(id => moleculesKeys.filter(key => key.includes(id)))
+            //     .map(arr => arr.length)
+            //     .every((el, i, arr) => el === arr[0]);
+            // console.log( moleculesGroups );
+                       
             for(let key in this.molecules){
                 this.molecules[key].cycle();
             };
             this.orgs.forEach(org => org.cycle());
+
         }, this.cycleTime);
     };
     

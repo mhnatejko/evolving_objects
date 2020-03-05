@@ -50,6 +50,68 @@ class Org{
         this.speedDir.y = (this.speed - dirX);
     };
 
+    detectMolecule(em, ix, iy){
+        try{
+            if(
+                em[ix  ][iy-1].molecules.some(id => !id.includes(this.id)) ||
+                em[ix-1][iy-1].molecules.some(id => !id.includes(this.id)) ||
+                em[ix+1][iy-1].molecules.some(id => !id.includes(this.id)) ||
+    
+                em[ix  ][iy  ].molecules.some(id => !id.includes(this.id)) ||
+                em[ix-1][iy  ].molecules.some(id => !id.includes(this.id)) ||
+                em[ix+1][iy  ].molecules.some(id => !id.includes(this.id)) ||
+    
+                em[ix  ][iy+1].molecules.some(id => !id.includes(this.id)) ||
+                em[ix-1][iy+1].molecules.some(id => !id.includes(this.id)) ||
+                em[ix+1][iy+1].molecules.some(id => !id.includes(this.id))
+            ){
+                console.log('MOLECULE!');
+            };
+        }catch(err){
+            console.log('out of field');
+        }
+    };
+
+    bounceOff(em, ix, iy){
+        try{
+            if(
+                em[ix  ][iy-1].orgs.some(id => id != this.id) ||
+                em[ix-1][iy-1].orgs.some(id => id != this.id) ||
+                em[ix+1][iy-1].orgs.some(id => id != this.id) 
+            ){
+                this.directionIndex.y *= -1;
+                this.collision();
+                console.log('edge event! up');
+                // console.log(this.id, em[ix][iy-1], em[ix-1][iy-1], em[ix+1][iy-1]);
+                return;
+            };
+
+            if(
+                em[ix  ][iy  ].orgs.some(id => id != this.id) ||
+                em[ix-1][iy  ].orgs.some(id => id != this.id) ||
+                em[ix+1][iy  ].orgs.some(id => id != this.id)
+            ){
+                this.directionIndex.x *= -1;
+                this.collision();
+                console.log('edge event! rest');
+                return;
+            };
+
+            if( 
+                em[ix  ][iy+1].orgs.some(id => id != this.id) ||
+                em[ix-1][iy+1].orgs.some(id => id != this.id) ||
+                em[ix+1][iy+1].orgs.some(id => id != this.id)
+            ){
+                this.directionIndex.y *= -1;
+                this.collision();
+                console.log('edge event! down');
+                return;
+            };
+        }catch(err){
+
+        };
+    }
+
     edgeSense(){
         const em = this.canvas.ecosystemMatrix;
         const xStart = this.pos.x;
@@ -61,43 +123,8 @@ class Org{
 
         for(let ix = xStart; ix < xEnd; ix++){
             for(let iy = yStart; iy < yEnd; iy++){
-                try{
-                    if(
-                        em[ix  ][iy-1].orgs.some(id => id != this.id) ||
-                        em[ix-1][iy-1].orgs.some(id => id != this.id) ||
-                        em[ix+1][iy-1].orgs.some(id => id != this.id) 
-                    ){
-                        this.directionIndex.y *= -1;
-                        this.collision();
-                        console.log('edge event! up');
-                        // console.log(this.id, em[ix][iy-1], em[ix-1][iy-1], em[ix+1][iy-1]);
-                        return;
-                    };
-    
-                    if(
-                        em[ix  ][iy].orgs.some(id => id != this.id) ||
-                        em[ix-1][iy].orgs.some(id => id != this.id) ||
-                        em[ix+1][iy].orgs.some(id => id != this.id)
-                    ){
-                        this.directionIndex.x *= -1;
-                        this.collision();
-                        console.log('edge event! rest');
-                        return;
-                    };
-    
-                    if( 
-                        em[ix  ][iy+1].orgs.some(id => id != this.id) ||
-                        em[ix-1][iy+1].orgs.some(id => id != this.id) ||
-                        em[ix+1][iy+1].orgs.some(id => id != this.id)
-                    ){
-                        this.directionIndex.y *= -1;
-                        this.collision();
-                        console.log('edge event! down');
-                        return;
-                    };
-                }catch(err){
-
-                };
+                this.detectMolecule(em, ix, iy);
+                this.bounceOff(em, ix, iy);
             };
         };
     };
@@ -190,7 +217,7 @@ class Org{
 
     leaveMolecule(){
         const molecule = new Molecule(
-            `mol${randomNum(1000000)}`,
+            `mol${(new Date()).getTime()}_${this.id}`,
             this.canvas, 
             { 
                 height: 2,
