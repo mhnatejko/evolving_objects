@@ -75,8 +75,8 @@ class Molecule{
 
     spread(){
         this.spreadCount++;
-        const height = this.size.height * randomNum(6);
-        const width = this.size.width * randomNum(6);
+        const height = this.size.height * randomNum(3);
+        const width = this.size.width * randomNum(3);
 
         const spreadDirections = [
             {
@@ -116,7 +116,7 @@ class Molecule{
         const randomDir = randomNum(dirLens);
 
         const molecule = new Molecule(
-            `mol${(new Date()).getTime()}_${this.id}`,
+            `${this.id}_${(new Date()).getTime()}`,
             this.canvas, 
             { 
                 height: this.size.height,
@@ -162,7 +162,7 @@ class Molecule{
             .replace(')', '')
             .split(',')
             .map(el => el.trim())
-            .map(el => parseInt(el) + 20)
+            .map(el => parseInt(el) + 30)
             .join(',');
 
         this.color = `rgb(${rgb})`;
@@ -173,7 +173,7 @@ class Molecule{
         if(this.cyclesProp.current >= this.cyclesProp.max){
             this.destroyMolecule();
         }else{
-            if(this.spreadCount <= 1 ) this.spread();
+            if(this.spreadCount <= 4 ) this.spread();
             this.drawMolecule();                
             this.colorBrightening();
         };

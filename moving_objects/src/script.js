@@ -5,8 +5,8 @@ const { randomNum } = require('./js/methods');
 
 window.addEventListener('DOMContentLoaded', function(){
     const ecosystem = new CanvasArea({
-        height: 500,
-        width: 500,
+        height: 400,
+        width: 400,
         cycleTime: 100
     });    
     
@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', function(){
         const r = randomNum(255);
         const g = randomNum(255);
         const b = randomNum(255);
-        const id = `org${(new Date()).getTime()}`;
+        const id = `org${(new Date()).getTime()}${randomNum(9)}`;
         const height = 10;
         const width = 10;
         const x = randomNum(ecosystem.width - width);
@@ -36,14 +36,14 @@ window.addEventListener('DOMContentLoaded', function(){
         );
     };
 
-    for(let i = 0; i < 2; i++){
+    for(let i = 0; i < 5; i++){
         ecosystem.fillEcosystem(randomOrg());
     };    
 
     ecosystem.runCycles();
 
-    window.addEventListener('keypress', function(e){
-        const keyCode = e.keyCode;
-        org.moveTo(keyCode);
-    });
+    // window.addEventListener('keypress', function(e){
+    //     const keyCode = e.keyCode;
+    //     org.moveTo(keyCode);
+    // });
 });

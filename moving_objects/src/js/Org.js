@@ -1,6 +1,7 @@
 /*jshint esversion:6 */
 const Molecule = require('./Molecule');
 const { randomNum } = require('./methods');
+const followByMolecules = require('./followByMoleculesMethods');
 
 const defaultArrows = {
     up: 119,
@@ -50,26 +51,80 @@ class Org{
         this.speedDir.y = (this.speed - dirX);
     };
 
-    detectMolecule(em, ix, iy){
-        try{
-            if(
-                em[ix  ][iy-1].molecules.some(id => !id.includes(this.id)) ||
-                em[ix-1][iy-1].molecules.some(id => !id.includes(this.id)) ||
-                em[ix+1][iy-1].molecules.some(id => !id.includes(this.id)) ||
-    
-                em[ix  ][iy  ].molecules.some(id => !id.includes(this.id)) ||
-                em[ix-1][iy  ].molecules.some(id => !id.includes(this.id)) ||
-                em[ix+1][iy  ].molecules.some(id => !id.includes(this.id)) ||
-    
-                em[ix  ][iy+1].molecules.some(id => !id.includes(this.id)) ||
-                em[ix-1][iy+1].molecules.some(id => !id.includes(this.id)) ||
-                em[ix+1][iy+1].molecules.some(id => !id.includes(this.id))
-            ){
-                console.log('MOLECULE!');
+    detectMolecule(){
+        const em = this.canvas.ecosystemMatrix;
+        const xStart = this.pos.x - 1;
+        const xEnd = this.pos.x + this.size.width + 1;
+        const yStart = this.pos.y - 1;
+        const yEnd = this.pos.y + this.size.height + 1;
+
+        let detectedOrgKey = null;
+
+        for(let x = xStart; x < xEnd; x++){
+            for(let y = yStart; y < yEnd; y++){
+                if(
+                    em[x] &&
+                    em[x][y] &&
+                    em[x+1] &&
+                    em[x][y+1] &&
+                    em[x-1] &&
+                    em[x][y-1]
+                ){
+                    const mols = em[x][y].molecules
+                        .filter(id => !id.includes(this.id));
+                    if(mols.length > 0){
+                        detectedOrgKey = mols[0]
+                            .split('_')
+                            .filter(part => part.includes('org'))[0];
+                        // console.log(detectedOrgKey);
+                        const newDir = followByMolecules(
+                            { 
+                                x: this.pos.x, 
+                                y: this.pos.y, 
+                                w: this.size.width, 
+                                h: this.size.height
+                            },
+                            this.canvas.ecosystemMatrix,
+                            this.canvas.molecules,
+                            detectedOrgKey
+                        );
+                        if(newDir.newXSpeedDir){                           
+                            this.speedDir.x = Math.floor(this.speed * newDir.newXSpeedDir);
+                            this.speedDir.y = this.speed - this.speedDir.x;
+                        };
+                        if(newDir.newYSpeedDir){
+                            this.speedDir.y = Math.floor(this.speed * newDir.newYSpeedDir);
+                            this.speedDir.x = this.speed - this.speedDir.y;
+                        }
+                        break;
+                    }
+                }
             };
-        }catch(err){
-            console.log('out of field');
-        }
+        };
+
+        
+
+
+        // try{
+        //     if(
+        //         em[ix  ][iy-1].molecules.some(id => !id.includes(this.id)) ||
+        //         em[ix-1][iy-1].molecules.some(id => !id.includes(this.id)) ||
+        //         em[ix+1][iy-1].molecules.some(id => !id.includes(this.id)) ||
+    
+        //         em[ix  ][iy  ].molecules.some(id => !id.includes(this.id)) ||
+        //         em[ix-1][iy  ].molecules.some(id => !id.includes(this.id)) ||
+        //         em[ix+1][iy  ].molecules.some(id => !id.includes(this.id)) ||
+    
+        //         em[ix  ][iy+1].molecules.some(id => !id.includes(this.id)) ||
+        //         em[ix-1][iy+1].molecules.some(id => !id.includes(this.id)) ||
+        //         em[ix+1][iy+1].molecules.some(id => !id.includes(this.id))
+        //     ){
+                
+        //         console.log('MOLECULE!');
+        //     };
+        // }catch(err){
+        //     console.log('out of field');
+        // }
     };
 
     bounceOff(em, ix, iy){
@@ -81,7 +136,7 @@ class Org{
             ){
                 this.directionIndex.y *= -1;
                 this.collision();
-                console.log('edge event! up');
+                // console.log('edge event! up');
                 // console.log(this.id, em[ix][iy-1], em[ix-1][iy-1], em[ix+1][iy-1]);
                 return;
             };
@@ -93,7 +148,7 @@ class Org{
             ){
                 this.directionIndex.x *= -1;
                 this.collision();
-                console.log('edge event! rest');
+                // console.log('edge event! rest');
                 return;
             };
 
@@ -104,7 +159,7 @@ class Org{
             ){
                 this.directionIndex.y *= -1;
                 this.collision();
-                console.log('edge event! down');
+                // console.log('edge event! down');
                 return;
             };
         }catch(err){
@@ -123,7 +178,7 @@ class Org{
 
         for(let ix = xStart; ix < xEnd; ix++){
             for(let iy = yStart; iy < yEnd; iy++){
-                this.detectMolecule(em, ix, iy);
+                // this.detectMolecule(em, ix, iy);
                 this.bounceOff(em, ix, iy);
             };
         };
@@ -235,6 +290,7 @@ class Org{
     cycle(){
         this.leaveMolecule();
         // if(randomNum(10) == 5) this.leaveMolecule();
+        this.detectMolecule();
         this.edgeSense();
         this.autoMove();
     };
